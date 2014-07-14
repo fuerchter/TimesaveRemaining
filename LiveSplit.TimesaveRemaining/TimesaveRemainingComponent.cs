@@ -52,17 +52,27 @@ namespace LiveSplit.TimesaveRemaining
             {
                 //Much Math, Such complicated
                 ISegment segment = state.Run[i];
-                TimeSpan? segmentTime;
-                if (i == 0)
+                TimeSpan? segmentTime=null;
+                if (segment.PersonalBestSplitTime != null)
                 {
-                    segmentTime = segment.PersonalBestSplitTime;
+                    if (i == 0)
+                    {
+                        segmentTime = segment.PersonalBestSplitTime;
+                    }
+                    else
+                    {
+                        ISegment prevSegment = state.Run[i - 1];
+                        if (prevSegment.PersonalBestSplitTime != null)
+                        {
+                            segmentTime = segment.PersonalBestSplitTime - prevSegment.PersonalBestSplitTime;
+                        }
+                    }
                 }
-                else
+
+                if (segmentTime != null && segment.BestSegmentTime != null)
                 {
-                    ISegment prevSegment = state.Run[i - 1];
-                    segmentTime = segment.PersonalBestSplitTime - prevSegment.PersonalBestSplitTime;
+                    component.TimeValue += (segmentTime - segment.BestSegmentTime);
                 }
-                component.TimeValue += (segmentTime - segment.BestSegmentTime);
             }
         }
 
